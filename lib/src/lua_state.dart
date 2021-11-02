@@ -117,7 +117,7 @@ class LuaState {
   /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_isstring).
   bool isString(int index) => lua.lua.lua_isstring(pointer, index) == 1;
 
-  /// Returns `tru` if the value at the given [index] is a C function, and
+  /// Returns `true` if the value at the given [index] is a C function, and
   /// `false` otherwise.
   ///
   /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_iscfunction).
@@ -151,7 +151,7 @@ class LuaState {
 
   /// Converts the Lua value at the given [index] to a double.
   ///
-  /// If convertion fails, [LuaError] will be thrown with its code set to
+  /// If conversion fails, [LuaError] will be thrown with its code set to
   /// [index].
   ///
   /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_tonumberx).
@@ -165,7 +165,7 @@ class LuaState {
 
   /// Converts the Lua value at the given [index] to an integer.
   ///
-  /// If convertion fails, [LuaError] will be thrown with its code set to
+  /// If conversion fails, [LuaError] will be thrown with its code set to
   /// [index].
   ///
   /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_tointegerx).

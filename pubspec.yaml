@@ -4,8 +4,7 @@ description: Dart bindings for the Lua scripting language.
 repository: https://github.com/chrisnorman7/dart_lua
 
 environment:
-  sdk: '>=2.15.0-178.1.beta <3.0.0'
-
+  sdk: ">=2.15.0 <3.0.0"
 
 dependencies:
   ffi: ^1.1.2
