@@ -1,7 +1,7 @@
 name: dart_lua
-description: A starting point for Dart libraries or applications.
-version: 1.0.0
-# homepage: https://www.example.com
+version: 0.0.0
+description: Dart bindings for the Lua scripting language.
+repository: https://github.com/chrisnorman7/dart_lua
 
 environment:
   sdk: '>=2.15.0-178.1.beta <3.0.0'
