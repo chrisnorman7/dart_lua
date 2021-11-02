@@ -400,4 +400,97 @@ class LuaState {
   /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_rawgetp).
   LuaType rawGetP(int index, Pointer<Void> p) =>
       lua.lua.lua_rawgetp(pointer, index, p).toLuaType();
+
+  /// Creates a new empty table and pushes it onto the stack.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_createtable).
+  void createTable(int narr, int nrec) =>
+      lua.lua.lua_createtable(pointer, narr, nrec);
+
+  /// This function creates and pushes on the stack a new full userdata, with
+  /// [nuvalue] associated Lua values, called user values, plus an associated
+  /// block of raw memory with size [sz] bytes.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_newuserdatauv).
+  Pointer<Void> newUserdataV(int sz, int nuvalue) =>
+      lua.lua.lua_newuserdatauv(pointer, sz, nuvalue);
+
+  /// If the value at the given [index] has a metatable, the function pushes
+  /// that metatable onto the stack and returns `true`. Otherwise, the function
+  /// returns `false` and pushes nothing on the stack.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_getmetatable).
+  bool getMetaTable(int index) => lua.lua.lua_getmetatable(pointer, index) == 1;
+
+  /// Pushes onto the stack the [n]-th user value associated with the full
+  /// userdata at the given [index] and returns the type of the pushed value.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_getiuservalue).
+  LuaType getIUserValue(int index, int n) =>
+      lua.lua.lua_getiuservalue(pointer, index, n).toLuaType();
+
+  /// Pops a value from the stack and sets it as the new value of global [name].
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_setglobal).
+  void setGlobal(String name) {
+    final namePointer = name.toNativeUtf8().cast<Int8>();
+    lua.lua.lua_setglobal(pointer, namePointer);
+    malloc.free(namePointer);
+  }
+
+  /// Does the equivalent to `t[k] = v`, where `t` is the value at the given
+  /// [index], `v` is the value on the top of the stack, and `k` is the value
+  /// just below the top.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_settable).
+  void setTable(int index) => lua.lua.lua_settable(pointer, index);
+
+  /// Does the equivalent to `t[k] = v`, where `t` is the value at the given
+  /// [index] and `v` is the value on the top of the stack.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_setfield).
+  void setField(int index, String k) {
+    final namePointer = k.toNativeUtf8().cast<Int8>();
+    lua.lua.lua_setfield(pointer, index, namePointer);
+    malloc.free(namePointer);
+  }
+
+  /// Does the equivalent to `t[n] = v`, where `t` is the value at the given
+  /// [index] and `v` is the value on the top of the stack.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_seti).
+  void setI(int index, int n) => lua.lua.lua_seti(pointer, index, n);
+
+  /// Similar to [setTable], but does a raw assignment (i.e., without
+  /// metamethods).
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_rawset).
+  void rawSet(int index) => lua.lua.lua_rawset(pointer, index);
+
+  /// Does the equivalent of `t[i] = v`, where `t` is the table at the given
+  /// [index] and `v` is the value on the top of the stack.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_rawseti).
+  void rawSetI(int index, int n) => lua.lua.lua_rawseti(pointer, index, n);
+
+  /// Does the equivalent of [t[p] = v], where `t` is the table at the given
+  /// [index], `p` is encoded as a light userdata, and v is the value on the
+  /// top of the stack.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_rawsetp).
+  void rawSetP(int index, Pointer<Void> p) =>
+      lua.lua.lua_rawsetp(pointer, index, p);
+
+  /// Pops a table or `nil` from the stack and sets that value as the new
+  /// metatable for the value at the given `index`. (`nil` means no metatable.)
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_setmetatable).
+  int setMetaTable(int index) => lua.lua.lua_setmetatable(pointer, index);
+
+  /// Pops a value from the stack and sets it as the new `n`-th user value
+  /// associated to the full userdata at the given [index].
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_setiuservalue).
+  void setIUserValue(int index, int n) =>
+      lua.lua.lua_setiuservalue(pointer, index, n);
 }
