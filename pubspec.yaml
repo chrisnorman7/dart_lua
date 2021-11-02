@@ -1,0 +1,33 @@
+name: dart_lua
+description: A starting point for Dart libraries or applications.
+version: 1.0.0
+# homepage: https://www.example.com
+
+environment:
+  sdk: '>=2.15.0-178.1.beta <3.0.0'
+
+
+dependencies:
+  ffi: ^1.1.2
+  path: ^1.8.0
+
+dev_dependencies:
+  dart_style: ^2.2.0
+  ffigen: ^4.1.1
+  lints: ^1.0.0
+  test: ^1.16.0
+
+ffigen:
+  output: "lib/src/lua_bindings.dart"
+  name: "DartLua"
+  description: "Bindings for Lua."
+  headers:
+    entry-points:
+      - "lua-5.4.3/src/lua.h"
+      - "lua-5.4.3/src/lauxlib.h"
+      - "lua-5.4.3/src/ldebug.h"
+      - "lua-5.4.3/src/lobject.h"
+      - "lua-5.4.3/src/lopcodes.h"
+      - "lua-5.4.3/src/lopnames.h"
+      - "lua-5.4.3/src/lstate.h"
+      - "lua-5.4.3/src/lundump.h"
