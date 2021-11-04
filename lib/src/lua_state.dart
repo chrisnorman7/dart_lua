@@ -493,4 +493,86 @@ class LuaState {
   /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_setiuservalue).
   void setIUserValue(int index, int n) =>
       lua.lua.lua_setiuservalue(pointer, index, n);
+
+  /// Calls a function.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_call).
+  void call(int nArgs, int nResults) =>
+      lua.lua.lua_callk(pointer, nArgs, nResults, 0, nullptr);
+
+  /// Yields a coroutine (thread).
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_yield).
+  int yield(int nResults) => lua.lua.lua_yieldk(pointer, nResults, 0, nullptr);
+
+  /// Starts and resumes a coroutine in this thread.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_resume).
+  int resume(LuaState from, int nArg, int nRes) {
+    lua.int32Pointer.value = nRes;
+    return lua.lua.lua_resume(pointer, from.pointer, nArg, lua.int32Pointer);
+  }
+
+  /// Returns the status of this thread.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_status).
+  int get status => lua.lua.lua_status(pointer);
+
+  /// Returns `true` if this thread can yield, and `false` otherwise.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_isyieldable).
+  bool get isYieldable => lua.lua.lua_isyieldable(pointer) == 1;
+
+  /// Emits a warning with the given message.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_warning).
+  void warning(String message, bool cont) {
+    final ptr = message.toNativeUtf8().cast<Int8>();
+    lua.lua.lua_warning(pointer, ptr, cont == true ? 1 : 0);
+    malloc.free(ptr);
+  }
+
+  /// Raises a Lua error, using the value on the top of the stack as the error
+  /// object.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_error).
+  int error() => lua.lua.lua_error(pointer);
+
+  /// Pops a key from the stack, and pushes a key - value pair from the table
+  /// at the given [index], the "next" pair after the given key.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_next).
+  int next(int index) => lua.lua.lua_next(pointer, index);
+
+  /// Concatenates the [n] values at the top of the stack, pops them, and
+  /// leaves the result on the top.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_concat).
+  void concat(int n) => lua.lua.lua_concat(pointer, n);
+
+  /// Returns the length of the value at the given [index].
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_len).
+  void len(int index) => lua.lua.lua_len(pointer, index);
+
+  /// Converts the string [s] to a number, pushes that number into the stack,
+  /// and returns the total size of the string, that is, its length plus one.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_stringtonumber).
+  int stringToNumber(String s) {
+    final ptr = s.toNativeUtf8().cast<Int8>();
+    final l = lua.lua.lua_stringtonumber(pointer, ptr);
+    malloc.free(ptr);
+    return l;
+  }
+
+  /// Marks the given [index] in the stack as a to-be-closed slot.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_toclose).
+  void toClose(int index) => lua.lua.lua_toclose(pointer, index);
+
+  /// Close the to-be-closed slot at the given [index] and set its value to nil.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_closeslot).
+  void closeSlot(int index) => lua.lua.lua_closeslot(pointer, index);
 }
