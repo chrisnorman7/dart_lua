@@ -6,4 +6,5 @@ library dart_lua;
 export 'src/dart_lua_base.dart';
 export 'src/enumerations.dart';
 export 'src/error.dart';
+export 'src/lua_debug.dart';
 export 'src/lua_state.dart';

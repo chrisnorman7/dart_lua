@@ -4,7 +4,7 @@ description: Dart bindings for the Lua scripting language.
 repository: https://github.com/chrisnorman7/dart_lua
 
 environment:
-  sdk: ">=2.15.0 <3.0.0"
+  sdk: ">=2.14.0 <3.0.0"
 
 dependencies:
   ffi: ^1.1.2
@@ -24,9 +24,3 @@ ffigen:
     entry-points:
       - "lua-5.4.3/src/lua.h"
       - "lua-5.4.3/src/lauxlib.h"
-      - "lua-5.4.3/src/ldebug.h"
-      - "lua-5.4.3/src/lobject.h"
-      - "lua-5.4.3/src/lopcodes.h"
-      - "lua-5.4.3/src/lopnames.h"
-      - "lua-5.4.3/src/lstate.h"
-      - "lua-5.4.3/src/lundump.h"

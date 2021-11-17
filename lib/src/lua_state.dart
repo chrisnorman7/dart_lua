@@ -7,6 +7,7 @@ import 'dart_lua_base.dart';
 import 'enumerations.dart';
 import 'error.dart';
 import 'lua_bindings.dart';
+import 'lua_debug.dart';
 
 /// A lua state.
 ///
@@ -575,4 +576,155 @@ class LuaState {
   ///
   /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_closeslot).
   void closeSlot(int index) => lua.lua.lua_closeslot(pointer, index);
+
+  ///
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_getstack).
+  LuaDebug getStack(int level) {
+    final ptr = calloc<lua_Debug>();
+    final worked = lua.lua.lua_getstack(pointer, level, ptr) == 1;
+    if (worked) {
+      return LuaDebug(ptr);
+    }
+    calloc.free(ptr);
+    throw LuaError(
+        0, 'The `level` parameter was greater than the stack depth.');
+  }
+
+  ///
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_getinfo).
+  bool getInfo(String what, LuaDebug ar) {
+    final whatPointer = what.toNativeUtf8().cast<Int8>();
+    final result = lua.lua.lua_getinfo(pointer, whatPointer, ar.pointer) == 1;
+    malloc.free(whatPointer);
+    return result;
+  }
+
+  /// Gets information about a local variable of a given activation record.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_getlocal).
+  String? getLocal(LuaDebug luaDebug, int n) {
+    final ptr = lua.lua.lua_getlocal(pointer, luaDebug.pointer, n);
+    if (ptr == nullptr) {
+      calloc.free(ptr);
+      return null;
+    }
+    final s = ptr.cast<Utf8>().toDartString();
+    calloc.free(ptr);
+    return s;
+  }
+
+  /// Sets the value of a local variable of a given activation record.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_setlocal).
+  String? setLocal(LuaDebug luaDebug, int n) {
+    final ptr = lua.lua.lua_setlocal(pointer, luaDebug.pointer, n);
+    if (ptr == nullptr) {
+      calloc.free(ptr);
+      return null;
+    }
+    final s = ptr.cast<Utf8>().toDartString();
+    calloc.free(ptr);
+    return s;
+  }
+
+  /// Gets information about a closure's upvalue.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_getupvalue).
+  String? getUpValue(int funcIndex, int n) {
+    final ptr = lua.lua.lua_getupvalue(pointer, funcIndex, n);
+    if (ptr == nullptr) {
+      calloc.free(ptr);
+      return null;
+    }
+    final s = ptr.cast<Utf8>().toDartString();
+    calloc.free(ptr);
+    return s;
+  }
+
+  /// Sets the value of a closure's upvalue.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_setupvalue).
+  String? setUpValue(int funcIndex, int n) {
+    final ptr = lua.lua.lua_setupvalue(pointer, funcIndex, n);
+    if (ptr == nullptr) {
+      calloc.free(ptr);
+      return null;
+    }
+    final s = ptr.cast<Utf8>().toDartString();
+    calloc.free(ptr);
+    return s;
+  }
+
+  /// Sets the debugging hook function.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_sethook).
+  void setHook(
+    lua_Hook func,
+    int mask,
+    int count,
+  ) =>
+      lua.lua.lua_sethook(pointer, func, mask, count);
+
+  /// Returns the current hook function.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_gethook).
+  lua_Hook get hook => lua.lua.lua_gethook(pointer);
+
+  /// Returns the current hook mask.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_gethookmask).
+  int get hookMask => lua.lua.lua_gethookmask(pointer);
+
+  /// Returns the current hook count.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_gethookcount).
+  int get hookCount => lua.lua.lua_gethookcount(pointer);
+
+  ///
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#lua_setcstacklimit).
+  set cStackLimit(int limit) => lua.lua.lua_setcstacklimit(pointer, limit);
+
+  /// Pushes onto the stack the field [e] from the metatable of the object at
+  /// index [obj].
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#luaL_getmetafield).
+  bool getMetaField(int obj, String e) {
+    final ptr = e.toNativeUtf8().cast<Int8>();
+    final value = lua.lua.luaL_getmetafield(pointer, obj, ptr);
+    malloc.free(ptr);
+    return value == 1;
+  }
+
+  /// Calls a metamethod.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#luaL_callmeta).
+  bool callMeta(int obj, String e) {
+    final ptr = e.toNativeUtf8().cast<Int8>();
+    final value = lua.lua.luaL_callmeta(pointer, obj, ptr);
+    malloc.free(ptr);
+    return value == 1;
+  }
+
+  /// Raises an error with the following message, where `func` is retrieved
+  /// from the call stack:
+  /// bad argument #<arg> to <func> (<extraMsg>)
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#luaL_argerror).
+  void argError(int arg, String extraMsg) {
+    final ptr = extraMsg.toNativeUtf8().cast<Int8>();
+    lua.lua.luaL_argerror(pointer, arg, ptr);
+    malloc.free(ptr);
+  }
+
+  /// No documentation found.
+  ///
+  /// [Lua Docs](https://www.lua.org/manual/5.4/manual.html#luaL_typeerror).
+  void typeError(int arg, String tName) {
+    final ptr = tName.toNativeUtf8().cast<Int8>();
+    lua.lua.luaL_typeerror(pointer, arg, ptr);
+    malloc.free(ptr);
+  }
 }
